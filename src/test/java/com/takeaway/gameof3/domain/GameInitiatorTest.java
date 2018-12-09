@@ -2,12 +2,10 @@ package com.takeaway.gameof3.domain;
 
 import com.github.tomakehurst.wiremock.junit.WireMockClassRule;
 import com.takeaway.gameof3.config.GameConfig;
-import com.takeaway.gameof3.service.NumberSendingService;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
@@ -22,14 +20,17 @@ import static org.assertj.core.api.Assertions.assertThat;
 @RunWith(SpringRunner.class)
 @ContextConfiguration(classes = {GameConfig.class})
 @TestPropertySource(properties = {
+        "game.initiator=true",
+        "player1.url=http://localhost",
+        "player1.port=8080",
         "player2.url=http://localhost",
-        "player2.port=8081",
+        "player2.port=8082",
 })
 @ComponentScan(basePackages = {"com.takeaway.gameof3"})
 public class GameInitiatorTest {
 
     @ClassRule
-    public static WireMockClassRule wireMockRule = new WireMockClassRule(8081);
+    public static WireMockClassRule wireMockRule = new WireMockClassRule(8082);
 
     @Autowired
     private GameInitiator gameInitiator;
