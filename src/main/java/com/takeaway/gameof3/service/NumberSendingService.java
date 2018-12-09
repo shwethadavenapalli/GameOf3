@@ -44,7 +44,30 @@ public class NumberSendingService {
         return Optional.empty();
     }
 
+    public Optional<ResponseEntity<Void>> sendGameStatusAsWON() {
+        try {
+            String player2UrlForSendingGameWonStatus = getEnpointForSendingGameStatus();
+            ResponseEntity<Void> voidResponseEntity = restTemplate.postForEntity(player2UrlForSendingGameWonStatus, Void.class, Void.class);
+
+            if (voidResponseEntity.getStatusCode() == HttpStatus.OK) {
+                log.info("Sending the game status to opponent player");
+                return Optional.of(voidResponseEntity);
+            }
+        } catch (HttpClientErrorException exception) {
+            log.warn("Player2 is unreachable due to exception : {}", exception.getMessage());
+        }
+        return Optional.empty();
+    }
+
+
     public String getPlayer2UrlForSendingNumber(int number) {
         return oponentEndpointSelector.getOpenentUrl() + "/gameof3/" + number;
+    }
+
+
+    public String getEnpointForSendingGameStatus() {
+        String currentPlayerName= oponentEndpointSelector.getCurrentPlayerName();
+        return oponentEndpointSelector.getOpenentUrl() + "/gameof3/status/" +currentPlayerName+"/WON" ;
+
     }
 }

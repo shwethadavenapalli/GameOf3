@@ -49,6 +49,24 @@ public class GameOf3ControllerIntegrationTest {
         MvcResult mvcResult = mockMvc.perform(requestBuilder).andReturn();
         MockHttpServletResponse response = mvcResult.getResponse();
         assertEquals(HttpStatus.ACCEPTED.value(), response.getStatus());
+
+        verify(postRequestedFor(urlMatching("/gameof3/" + 9)));
+    }
+
+    @Test
+    public void shouldSendGameStatusAsWonToOpponent() throws Exception {
+        String playerName = "Player1";
+        String gameStatus = "WON";
+
+        setupStubForAcceptingGameAsWonToPlayer2(playerName, gameStatus);
+
+        RequestBuilder requestBuilder = MockMvcRequestBuilders
+                .post("/gameof3/3");
+        MvcResult mvcResult = mockMvc.perform(requestBuilder).andReturn();
+        MockHttpServletResponse response = mvcResult.getResponse();
+        assertEquals(HttpStatus.OK.value(), response.getStatus());
+
+        verify(postRequestedFor(urlMatching("/gameof3/status/" + playerName + "/" + gameStatus)));
     }
 
     @Test
@@ -61,10 +79,15 @@ public class GameOf3ControllerIntegrationTest {
     }
 
     public void setupStubForPlayer2ForAcceptingANumberAndReturn202(Integer number) {
-        stubFor(post(urlMatching("/gameof3/" + number.intValue()))
+        stubFor(post(urlMatching("/gameof3/" + number))
                 .willReturn(aResponse()
                         .withStatus(202)));
     }
 
+    public void setupStubForAcceptingGameAsWonToPlayer2(String playerName, String gameStatus) {
+        stubFor(post(urlMatching("/gameof3/status/" + playerName + "/" + gameStatus))
+                .willReturn(aResponse()
+                        .withStatus(200)));
+    }
 
 }

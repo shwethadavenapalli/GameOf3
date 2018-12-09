@@ -39,8 +39,20 @@ public class GameOf3Controller {
             else
                 return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
         }
+
         log.info("I have WON !!! :)");
-        return new ResponseEntity<>(HttpStatus.ACCEPTED);
+
+        //convey to game status as WON to oponent player
+        numberSendingService.sendGameStatusAsWON();
+
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/status/{playerName}/WON", method = RequestMethod.POST)
+    public ResponseEntity<Void> processRequest(@PathVariable String playerName) {
+
+        log.info("Received that {} has won.", playerName);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     private boolean IsGameWonByCurrentPlayer(@PathVariable Integer inputNumber) {

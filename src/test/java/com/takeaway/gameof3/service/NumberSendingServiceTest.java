@@ -40,37 +40,75 @@ public class NumberSendingServiceTest {
         ResponseEntity<Void> responseEntity = new ResponseEntity<>(HttpStatus.ACCEPTED);
         int numberToSend = 20;
 
-        String player2Url = numberSendingService.getPlayer2UrlForSendingNumber(numberToSend);
+        String player2UrlForSendingNumber = numberSendingService.getPlayer2UrlForSendingNumber(numberToSend);
 
-        when(restTemplate.postForEntity(player2Url, Void.class, Void.class))
+        when(restTemplate.postForEntity(player2UrlForSendingNumber, Void.class, Void.class))
                 .thenReturn(responseEntity);
 
         //Act
-        Optional<ResponseEntity<Void>> send = numberSendingService.send(numberToSend);
+        Optional<ResponseEntity<Void>> response = numberSendingService.send(numberToSend);
 
         //Assert
-        assertThat(send).isPresent();
-        assertThat(send.get().getStatusCode()).isEqualTo(HttpStatus.ACCEPTED);
-        verify(restTemplate, times(1)).postForEntity(player2Url, Void.class, Void.class);
+        assertThat(response).isPresent();
+        assertThat(response.get().getStatusCode()).isEqualTo(HttpStatus.ACCEPTED);
+        verify(restTemplate, times(1)).postForEntity(player2UrlForSendingNumber, Void.class, Void.class);
         verifyNoMoreInteractions(restTemplate);
     }
 
     @Test
-    public void shouldThrowPlaye2NotAvailableExceptionIfPlayer2IsUnreachable() throws Exception {
+    public void shouldReturnEmptyOptionalIfPlayer2IsUnreachableForSengindANumber() throws Exception {
 
         //Arrange
         int numberToSend = 20;
-        String player2Url = numberSendingService.getPlayer2UrlForSendingNumber(numberToSend);
+        String player2UrlForSendingNumber = numberSendingService.getPlayer2UrlForSendingNumber(numberToSend);
 
-        when(restTemplate.postForEntity(player2Url, Void.class, Void.class))
+        when(restTemplate.postForEntity(player2UrlForSendingNumber, Void.class, Void.class))
                 .thenThrow(new HttpClientErrorException(HttpStatus.NOT_FOUND));
 
         //Act
-        Optional<ResponseEntity<Void>> send = numberSendingService.send(numberToSend);
-        assertThat(send).isEmpty();
+        Optional<ResponseEntity<Void>> response = numberSendingService.send(numberToSend);
+        assertThat(response).isEmpty();
 
         //Assert
-        verify(restTemplate, times(1)).postForEntity(player2Url, Void.class, Void.class);
+        verify(restTemplate, times(1)).postForEntity(player2UrlForSendingNumber, Void.class, Void.class);
+        verifyNoMoreInteractions(restTemplate);
+    }
+
+    @Test
+    public void shouldSendGameWonStatusToPlayer2Appplication() throws Exception {
+
+        //Arrange
+        ResponseEntity<Void> responseEntity = new ResponseEntity<>(HttpStatus.OK);
+
+        String enpointForSendingGameStatus = numberSendingService.getEnpointForSendingGameStatus();
+
+        when(restTemplate.postForEntity(enpointForSendingGameStatus, Void.class, Void.class))
+                .thenReturn(responseEntity);
+
+        //Act
+        Optional<ResponseEntity<Void>> response = numberSendingService.sendGameStatusAsWON();
+
+        //Assert
+        assertThat(response).isPresent();
+        assertThat(response.get().getStatusCode()).isEqualTo(HttpStatus.OK);
+        verify(restTemplate, times(1)).postForEntity(enpointForSendingGameStatus, Void.class, Void.class);
+        verifyNoMoreInteractions(restTemplate);
+    }
+
+    @Test
+    public void shouldReturnEmptyOptionalIfPlayer2IsUnreachableForSendingGameStatus() throws Exception {
+
+        String enpointForSendingGameStatus = numberSendingService.getEnpointForSendingGameStatus();
+
+        when(restTemplate.postForEntity(enpointForSendingGameStatus, Void.class, Void.class))
+                .thenThrow(new HttpClientErrorException(HttpStatus.NOT_FOUND));
+
+        //Act
+        Optional<ResponseEntity<Void>> response = numberSendingService.sendGameStatusAsWON();
+
+        //Assert
+        assertThat(response).isEmpty();
+        verify(restTemplate, times(1)).postForEntity(enpointForSendingGameStatus, Void.class, Void.class);
         verifyNoMoreInteractions(restTemplate);
     }
 

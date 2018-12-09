@@ -32,6 +32,7 @@ public class OponentEndpointSelector {
     public void setGameInitator(boolean gameInitator) {
         this.gameInitator = gameInitator;
     }
+
     public boolean isGameInitator() {
         return gameInitator;
     }
@@ -66,5 +67,12 @@ public class OponentEndpointSelector {
 
     public void setPlayer2Port(String player2Port) {
         this.player2Port = player2Port;
+    }
+
+    public String getCurrentPlayerName() {
+        if (isGameInitator()) {
+            return "Player1";
+        }
+        return "Player2";
     }
 }

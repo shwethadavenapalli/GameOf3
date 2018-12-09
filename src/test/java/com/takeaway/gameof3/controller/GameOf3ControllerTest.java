@@ -70,12 +70,16 @@ public class GameOf3ControllerTest {
     @Test
     public void givenNumberDivisibleBy3_ShouldRoundToNearestFactorOf3_AndDeclareGameIsWon_WhenComputedNumberIs1() throws Exception {
 
-        MvcResult result = mockMvc.perform(post("/gameof3/3"))
-                .andReturn();
+        ResponseEntity<Void> responseEntity = new ResponseEntity<>(HttpStatus.OK);
 
+        when(serviceMock.sendGameStatusAsWON()).thenReturn(Optional.of(responseEntity));
+
+        MvcResult result = mockMvc.perform(post("/gameof3/3")).andReturn();
         MockHttpServletResponse response = result.getResponse();
 
-        assertEquals(HttpStatus.ACCEPTED.value(), response.getStatus());
+        assertEquals(HttpStatus.OK.value(), response.getStatus());
+
+        verify(serviceMock, times(1)).sendGameStatusAsWON();
 
         verifyNoMoreInteractions(serviceMock);
     }
@@ -92,5 +96,16 @@ public class GameOf3ControllerTest {
         MockHttpServletResponse response = result.getResponse();
 
         assertEquals(HttpStatus.NOT_ACCEPTABLE.value(), response.getStatus());
+    }
+
+    @Test
+    public void shouldAcceptGameStatusAsWONFromOponentPlayer() throws Exception {
+
+        MvcResult result = mockMvc.perform(post("/gameof3/status/Player1/WON")).andReturn();
+
+        MockHttpServletResponse response = result.getResponse();
+
+        assertEquals(HttpStatus.OK.value(), response.getStatus());
+
     }
 }
