@@ -3,6 +3,7 @@ package com.takeaway.gameof3.config;
 import com.takeaway.gameof3.domain.GameInitiator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
@@ -28,18 +29,17 @@ public class GameConfig {
     public TaskExecutor taskExecutor() {
         return new SimpleAsyncTaskExecutor();
     }
+
     @Bean
-    public GameInitiator getGameInitiator(RestTemplate restTemplate){
-        return new GameInitiator(restTemplate);
+    public GameInitiator getGameInitiator(@Value("${player2.url:}") String player2Url,
+                                          @Value("${player2.port:}") String player2Port,
+                                          RestTemplate restTemplate){
+        return new GameInitiator(player2Url,player2Port, restTemplate);
     }
 
     @ConditionalOnProperty("game.initiator")
     @Bean
     public CommandLineRunner schedulingRunner(TaskExecutor executor, GameInitiator gameInitiator) {
-        return new CommandLineRunner() {
-            public void run(String... args) throws Exception {
-                executor.execute(gameInitiator);
-            }
-        };
+        return args -> executor.execute(gameInitiator);
     }
 }

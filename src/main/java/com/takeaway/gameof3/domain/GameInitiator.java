@@ -19,14 +19,17 @@ public class GameInitiator implements Runnable {
 
     private static final Logger log = LoggerFactory.getLogger(GameInitiator.class);
 
+    private String player2Url;
+
+    private final String player2Port;
     private final RestTemplate restTemplate;
     private static final int MAX_RETRY_COUNT = 3;
     private int retryAttemptsPerformed;
 
-    private String player2Url = "http://localhost:8081/gameof3/";
-
     @Autowired
-    public GameInitiator(RestTemplate restTemplate) {
+    public GameInitiator(String player2Url, String player2Port, RestTemplate restTemplate) {
+        this.player2Url = player2Url;
+        this.player2Port = player2Port;
         this.restTemplate = restTemplate;
     }
 
@@ -48,7 +51,7 @@ public class GameInitiator implements Runnable {
         ResponseEntity<Void> voidResponseEntity;
         do {
             try {
-                voidResponseEntity = restTemplate.postForEntity(player2Url + number, Void.class, Void.class);
+                voidResponseEntity = restTemplate.postForEntity(getPlayer2UrlForSendingNumber(number), Void.class, Void.class);
 
                 if (voidResponseEntity.getStatusCode() == HttpStatus.OK) {
                     log.info("Send the random number generated to Player 2");
@@ -65,5 +68,9 @@ public class GameInitiator implements Runnable {
 
     public int getRetryAttemptPerformed() {
         return retryAttemptsPerformed;
+    }
+
+    private String getPlayer2UrlForSendingNumber(int number) {
+        return player2Url + ":" + player2Port + "/gameof3/" + number;
     }
 }
