@@ -1,9 +1,9 @@
 package com.takeaway.gameof3.service;
 
+import com.takeaway.gameof3.config.OponentEndpointSelector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -19,19 +19,14 @@ import java.util.Optional;
 public class NumberSendingService {
     private static final Logger log = LoggerFactory.getLogger(NumberSendingService.class);
 
-    private String playerUrl;
-    private String playerPort;
-    private RestTemplate restTemplate;
-
+    private final OponentEndpointSelector oponentEndpointSelector;
+    private final RestTemplate restTemplate;
 
     @Autowired
-    public NumberSendingService(@Value("${player2.url}") String playerUrl,
-                                @Value("${player2.port}") String playerPort,
+    public NumberSendingService(OponentEndpointSelector oponentEndpointSelector,
                                 RestTemplate restTemplate) {
-        this.playerUrl = playerUrl;
-        this.playerPort = playerPort;
+        this.oponentEndpointSelector = oponentEndpointSelector;
         this.restTemplate = restTemplate;
-
     }
 
     public Optional<ResponseEntity<Void>> send(int number) {
@@ -50,6 +45,6 @@ public class NumberSendingService {
     }
 
     public String getPlayer2UrlForSendingNumber(int number) {
-        return playerUrl + ":" + playerPort + "/gameof3/" + number;
+        return oponentEndpointSelector.getOpenentUrl() + "/gameof3/" + number;
     }
 }

@@ -1,5 +1,6 @@
 package com.takeaway.gameof3.service;
 
+import com.takeaway.gameof3.config.OponentEndpointSelector;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -28,7 +29,8 @@ public class NumberSendingServiceTest {
 
     @Before
     public void setUp() throws Exception {
-        numberSendingService = new NumberSendingService("localhost", "8081", restTemplate);
+        OponentEndpointSelector oponentEndpointSelector = getOponentEndpointSelector();
+        numberSendingService = new NumberSendingService(oponentEndpointSelector, restTemplate);
     }
 
     @Test
@@ -37,6 +39,7 @@ public class NumberSendingServiceTest {
         //Arrange
         ResponseEntity<Void> responseEntity = new ResponseEntity<>(HttpStatus.ACCEPTED);
         int numberToSend = 20;
+
         String player2Url = numberSendingService.getPlayer2UrlForSendingNumber(numberToSend);
 
         when(restTemplate.postForEntity(player2Url, Void.class, Void.class))
@@ -58,6 +61,7 @@ public class NumberSendingServiceTest {
         //Arrange
         int numberToSend = 20;
         String player2Url = numberSendingService.getPlayer2UrlForSendingNumber(numberToSend);
+
         when(restTemplate.postForEntity(player2Url, Void.class, Void.class))
                 .thenThrow(new HttpClientErrorException(HttpStatus.NOT_FOUND));
 
@@ -68,5 +72,15 @@ public class NumberSendingServiceTest {
         //Assert
         verify(restTemplate, times(1)).postForEntity(player2Url, Void.class, Void.class);
         verifyNoMoreInteractions(restTemplate);
+    }
+
+    private OponentEndpointSelector getOponentEndpointSelector() {
+        OponentEndpointSelector oponentEndpointSelector = new OponentEndpointSelector();
+        oponentEndpointSelector.setGameInitator(true);
+        oponentEndpointSelector.setPlayer1Url("http://localhost");
+        oponentEndpointSelector.setPlayer2Url("http://localhost");
+        oponentEndpointSelector.setPlayer1Port("8080");
+        oponentEndpointSelector.setPlayer2Port("8081");
+        return oponentEndpointSelector;
     }
 }
