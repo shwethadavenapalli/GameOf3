@@ -19,15 +19,19 @@ import java.util.Optional;
 public class NumberSendingService {
     private static final Logger log = LoggerFactory.getLogger(NumberSendingService.class);
 
-    private  String player2Url;
-    private  String player2Port;
-    private  RestTemplate restTemplate;
+    private String playerUrl;
+    private String playerPort;
+    private RestTemplate restTemplate;
+
 
     @Autowired
-    public NumberSendingService(String player2Url, String player2Port, RestTemplate restTemplate) {
-        this.player2Url = player2Url;
-        this.player2Port = player2Port;
+    public NumberSendingService(@Value("${player2.url}") String playerUrl,
+                                @Value("${player2.port}") String playerPort,
+                                RestTemplate restTemplate) {
+        this.playerUrl = playerUrl;
+        this.playerPort = playerPort;
         this.restTemplate = restTemplate;
+
     }
 
     public Optional<ResponseEntity<Void>> send(int number) {
@@ -39,14 +43,13 @@ public class NumberSendingService {
                 log.info("Send the random number generated to Player 2");
                 return Optional.of(voidResponseEntity);
             }
-        }
-        catch(HttpClientErrorException exception){
+        } catch (HttpClientErrorException exception) {
             log.warn("Player2 is unreachable due to exception : {}", exception.getMessage());
         }
         return Optional.empty();
     }
 
     public String getPlayer2UrlForSendingNumber(int number) {
-        return player2Url + ":" + player2Port + "/gameof3/" + number;
+        return playerUrl + ":" + playerPort + "/gameof3/" + number;
     }
 }

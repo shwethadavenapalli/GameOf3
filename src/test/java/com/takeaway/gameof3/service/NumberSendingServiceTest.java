@@ -1,6 +1,5 @@
-package com.takeaway.gameof3;
+package com.takeaway.gameof3.service;
 
-import com.takeaway.gameof3.service.NumberSendingService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
