@@ -31,7 +31,7 @@ public class GameOf3Controller {
 
         Integer roundedInputNumber = RoundToNearestFactor.roundToNearestFactorOf3(inputNumber);
 
-        if (inputNumber / 3 != 1) {
+        if (!IsGameWonByCurrentPlayer(inputNumber)) {
             Optional<ResponseEntity<Void>> isSentToNextPlayer = numberSendingService.send(roundedInputNumber);
 
             if (isSentToNextPlayer.isPresent() && isSentToNextPlayer.get().getStatusCode() == HttpStatus.ACCEPTED)
@@ -41,6 +41,10 @@ public class GameOf3Controller {
         }
         log.info("I have WON !!! :)");
         return new ResponseEntity<>(HttpStatus.ACCEPTED);
+    }
+
+    private boolean IsGameWonByCurrentPlayer(@PathVariable Integer inputNumber) {
+        return inputNumber / 3 == 1;
     }
 
 }
