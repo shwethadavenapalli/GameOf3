@@ -1,12 +1,13 @@
-package com.takeaway.gameof3;
+package com.takeaway.gameof3.service;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.ResourceAccessException;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.Optional;
@@ -18,9 +19,9 @@ import java.util.Optional;
 public class NumberSendingService {
     private static final Logger log = LoggerFactory.getLogger(NumberSendingService.class);
 
-    private final String player2Url;
-    private final String player2Port;
-    private final RestTemplate restTemplate;
+    private  String player2Url;
+    private  String player2Port;
+    private  RestTemplate restTemplate;
 
     @Autowired
     public NumberSendingService(String player2Url, String player2Port, RestTemplate restTemplate) {
@@ -31,14 +32,15 @@ public class NumberSendingService {
 
     public Optional<ResponseEntity<Void>> send(int number) {
         try {
-            ResponseEntity<Void> voidResponseEntity = restTemplate.postForEntity(getPlayer2UrlForSendingNumber(number), Void.class, Void.class);
+            String player2UrlForSendingNumber = getPlayer2UrlForSendingNumber(number);
+            ResponseEntity<Void> voidResponseEntity = restTemplate.postForEntity(player2UrlForSendingNumber, Void.class, Void.class);
 
             if (voidResponseEntity.getStatusCode() == HttpStatus.ACCEPTED) {
                 log.info("Send the random number generated to Player 2");
                 return Optional.of(voidResponseEntity);
             }
         }
-        catch(ResourceAccessException exception){
+        catch(HttpClientErrorException exception){
             log.warn("Player2 is unreachable due to exception : {}", exception.getMessage());
         }
         return Optional.empty();

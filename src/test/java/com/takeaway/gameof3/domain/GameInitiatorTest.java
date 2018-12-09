@@ -19,7 +19,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @RunWith(SpringRunner.class)
 @ContextConfiguration(classes = {GameConfig.class})
-@ComponentScan(basePackages = {"com.takeaway.gameof3"})
 @TestPropertySource(properties = {
         "player2.url=http://localhost",
         "player2.port=8081",
@@ -33,8 +32,8 @@ public class GameInitiatorTest {
     private GameInitiator gameInitiator;
 
     @Test
-    public void shouldGenerateRandomNumberAnd_MakeAtMost_3AttemptsToSendNumber_WhenPlayer2IsOffline() {
-        gameInitiator.send(10);
+    public void shouldGenerateRandomNumberAnd_MakeAtMost_3AttemptsToSendNumber_WhenPlayer2IsOffline() throws InterruptedException {
+        gameInitiator.run();
         assertThat(gameInitiator.getRetryAttemptPerformed()).isEqualTo(3);
     }
 
@@ -48,6 +47,6 @@ public class GameInitiatorTest {
     public void setupStubForPlayer2ForAcceptingANumberAndReturn200(Integer number){
         stubFor(post(urlMatching("/gameof3/"+number))
                 .willReturn(aResponse()
-                        .withStatus(200)));
+                        .withStatus(202)));
     }
 }

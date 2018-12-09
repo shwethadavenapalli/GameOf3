@@ -1,5 +1,6 @@
 package com.takeaway.gameof3;
 
+import com.takeaway.gameof3.service.NumberSendingService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -7,7 +8,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.client.ResourceAccessException;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.Optional;
@@ -59,7 +60,7 @@ public class NumberSendingServiceTest {
         int numberToSend = 20;
         String player2Url = numberSendingService.getPlayer2UrlForSendingNumber(numberToSend);
         when(restTemplate.postForEntity(player2Url, Void.class, Void.class))
-                .thenThrow(new ResourceAccessException("Requested url is not accessible"));
+                .thenThrow(new HttpClientErrorException(HttpStatus.NOT_FOUND));
 
         //Act
         Optional<ResponseEntity<Void>> send = numberSendingService.send(numberToSend);

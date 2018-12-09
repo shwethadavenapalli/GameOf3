@@ -1,6 +1,7 @@
 package com.takeaway.gameof3.config;
 
 import com.takeaway.gameof3.domain.GameInitiator;
+import com.takeaway.gameof3.service.NumberSendingService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -31,10 +32,14 @@ public class GameConfig {
     }
 
     @Bean
-    public GameInitiator getGameInitiator(@Value("${player2.url:}") String player2Url,
-                                          @Value("${player2.port:}") String player2Port,
-                                          RestTemplate restTemplate){
-        return new GameInitiator(player2Url,player2Port, restTemplate);
+    public NumberSendingService getNumberSendingService(@Value("${player2.url:}") String player2Url,
+                                @Value("${player2.port:}") String player2Port,
+                                RestTemplate restTemplate) {
+        return new NumberSendingService(player2Url, player2Port, restTemplate);
+    }
+    @Bean
+    public GameInitiator getGameInitiator(NumberSendingService numberSendingService) {
+        return new GameInitiator(numberSendingService);
     }
 
     @ConditionalOnProperty("game.initiator")

@@ -1,15 +1,15 @@
 package com.takeaway.gameof3.domain;
 
+import com.takeaway.gameof3.service.NumberSendingService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.ResourceAccessException;
-import org.springframework.web.client.RestTemplate;
 
-import java.util.Random;
+import java.util.Optional;
+
+import static com.takeaway.gameof3.util.RandomNumberGenerator.getRandomNumber;
 
 /**
  * Created by Shwetha on 08-12-2018.
@@ -19,58 +19,52 @@ public class GameInitiator implements Runnable {
 
     private static final Logger log = LoggerFactory.getLogger(GameInitiator.class);
 
-    private String player2Url;
-
-    private final String player2Port;
-    private final RestTemplate restTemplate;
+    private final NumberSendingService service;
     private static final int MAX_RETRY_COUNT = 3;
     private int retryAttemptsPerformed;
 
     @Autowired
-    public GameInitiator(String player2Url, String player2Port, RestTemplate restTemplate) {
-        this.player2Url = player2Url;
-        this.player2Port = player2Port;
-        this.restTemplate = restTemplate;
+    public GameInitiator(NumberSendingService service) {
+        this.service = service;
     }
 
     @Override
     public void run() {
         log.info("Sending a random number to player2");
-        int number = getRandomNumber();
-        send(number);
-    }
-
-    private int getRandomNumber() {
-        Random random = new Random();
-        int min = 3;
-        int max = Integer.MAX_VALUE;
-        return random.nextInt((max - min) + 1) + min;
+        send(getRandomNumber());
     }
 
     public void send(int number) {
-        ResponseEntity<Void> voidResponseEntity;
+        //reset the attempt counter
+        resetAttemptCoutner();
+
+        //perform an attempt to send a number to player 2,
+        //Max attempts is 3 times. After that player 1 refuses to play :(
         do {
-            try {
-                voidResponseEntity = restTemplate.postForEntity(getPlayer2UrlForSendingNumber(number), Void.class, Void.class);
-
-                if (voidResponseEntity.getStatusCode() == HttpStatus.OK) {
-                    log.info("Send the random number generated to Player 2");
-                    return;
-                }
-
-            } catch (ResourceAccessException resourceAccessException) {
-                log.warn("Could not reach player 2 endpoint :{}", player2Url);
+            Optional<ResponseEntity<Void>> response = service.send(number);
+            if (!response.isPresent()) {
                 retryAttemptsPerformed++;
+                sleepExponentially();
+            } else {
+                return;
             }
-
         } while (retryAttemptsPerformed < MAX_RETRY_COUNT);
+    }
+
+    private void resetAttemptCoutner() {
+        retryAttemptsPerformed = 0;
+    }
+
+    private void sleepExponentially() {
+        double sleepForMicroSeconds = Math.pow(Double.valueOf(retryAttemptsPerformed), 2d);
+        try {
+            Thread.sleep(Double.valueOf(sleepForMicroSeconds * 1000).longValue());
+        } catch (InterruptedException e) {
+            log.error("Thread was interrupted while it was waiting for player 2 to revive");
+        }
     }
 
     public int getRetryAttemptPerformed() {
         return retryAttemptsPerformed;
-    }
-
-    private String getPlayer2UrlForSendingNumber(int number) {
-        return player2Url + ":" + player2Port + "/gameof3/" + number;
     }
 }
