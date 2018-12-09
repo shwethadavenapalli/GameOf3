@@ -42,7 +42,7 @@ public class GameOf3ControllerIntegrationTest {
 
     @Test
     public void givenNumberShouldBeSentToOpponentPlayerSuccessfully() throws Exception {
-        setupStubForPlayer2ForAcceptingANumberAndReturn200(10);
+        setupStubForPlayer2ForAcceptingANumberAndReturn202(9);
 
         RequestBuilder requestBuilder = MockMvcRequestBuilders
                 .post("/gameof3/10");
@@ -52,7 +52,7 @@ public class GameOf3ControllerIntegrationTest {
     }
 
     @Test
-    public void shouldReturnEmptyValueWhenOpponentPlayerIsOfflien() throws Exception {
+    public void shouldReturnEmptyValueWhenOpponentPlayerIsOffline() throws Exception {
         RequestBuilder requestBuilder = MockMvcRequestBuilders
                 .post("/gameof3/50");
         MvcResult mvcResult = mockMvc.perform(requestBuilder).andReturn();
@@ -60,8 +60,8 @@ public class GameOf3ControllerIntegrationTest {
         assertEquals(HttpStatus.NOT_ACCEPTABLE.value(), response.getStatus());
     }
 
-    public void setupStubForPlayer2ForAcceptingANumberAndReturn200(Integer number) {
-        stubFor(post(urlMatching("/gameof3/" + number))
+    public void setupStubForPlayer2ForAcceptingANumberAndReturn202(Integer number) {
+        stubFor(post(urlMatching("/gameof3/" + number.intValue()))
                 .willReturn(aResponse()
                         .withStatus(202)));
     }
