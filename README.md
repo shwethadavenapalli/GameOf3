@@ -19,6 +19,13 @@ Created a Spring boot application which can run for in 2 modes for each player.
 - If either of the player receives 3, then the GAME is WON by that player.
 - The player who won will send the WON status to the oponent player.
 
+This application exposes endpoints for message passing between players
+ ```
+POST -  /gameof3/{inputNumber}
+POST - /status/{playerName}/WON
+
+ ```
+
 ### How to build 
  - Run the `sh build.sh` which runs `mvn clean install`
 
