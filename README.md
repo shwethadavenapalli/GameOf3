@@ -15,7 +15,7 @@ The same rules apply until one of the players reaches the number 1 after divisio
 Created a Spring boot application which can run for in 2 modes for each player.
 
 - Player 1 is the game initiator and runs on port `8080` and sends the first number to player
-- Player 2 waits for the input number and when received, divides the number by 3 and sends it to player 1
+- Player 2 runs on port `8081` waits for the input number and when received, divides the number by 3 and sends it to player 1
 - If either of the player receives 3, then the GAME is WON by that player.
 - The player who won will send the WON status to the oponent player.
 
