@@ -23,7 +23,6 @@ This application exposes endpoints for message passing between players
  ```
 POST -  /gameof3/{inputNumber}
 POST - /status/{playerName}/WON
-
  ```
 
 ### How to build 
