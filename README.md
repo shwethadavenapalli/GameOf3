@@ -1,4 +1,8 @@
+https://travis-ci.org/shwethadavenapalli/GameOf3.svg?branch=master
+
+
 # GameOf3
+
 
 ### About the Game
 
