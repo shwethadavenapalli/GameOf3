@@ -1,8 +1,10 @@
 package com.takeaway.gameof3.controller;
 
+import com.takeaway.gameof3.service.NumberSendingExecutorService;
 import com.takeaway.gameof3.service.NumberSendingService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -33,12 +35,13 @@ public class GameOf3ControllerTest {
     @MockBean
     private NumberSendingService serviceMock;
 
+    @MockBean
+    private NumberSendingExecutorService executorService;
+
     @Test
     public void givenNumberNotDivisibleBy3_ShouldRoundToNearestFactorOf3_AndSendComputedNumberToOpponentPlayer_Successfully() throws Exception {
 
         ResponseEntity<Void> responseEntity = new ResponseEntity<>(HttpStatus.ACCEPTED);
-
-        when(serviceMock.send(17)).thenReturn(Optional.of(responseEntity));
 
         MvcResult result = mockMvc.perform(post("/gameof3/50"))
                 .andReturn();
@@ -47,15 +50,13 @@ public class GameOf3ControllerTest {
 
         assertEquals(HttpStatus.ACCEPTED.value(), response.getStatus());
 
-        verify(serviceMock, times(1)).send(17);
+        verify(executorService, times(1)).send(17);
     }
 
     @Test
     public void givenNumberDivisibleBy3_ShouldRoundToNearestFactorOf3_AndSendComputedNumberToOpponentPlayer_Successfully() throws Exception {
 
         ResponseEntity<Void> responseEntity = new ResponseEntity<>(HttpStatus.ACCEPTED);
-
-        when(serviceMock.send(17)).thenReturn(Optional.of(responseEntity));
 
         MvcResult result = mockMvc.perform(post("/gameof3/51"))
                 .andReturn();
@@ -64,7 +65,8 @@ public class GameOf3ControllerTest {
 
         assertEquals(HttpStatus.ACCEPTED.value(), response.getStatus());
 
-        verify(serviceMock, times(1)).send(17);
+        Thread.sleep(2000);
+        verify(executorService, times(1)).send(17);
     }
 
     @Test
@@ -80,13 +82,11 @@ public class GameOf3ControllerTest {
         assertEquals(HttpStatus.OK.value(), response.getStatus());
 
         verify(serviceMock, times(1)).sendGameStatusAsWON();
-
     }
 
     @Test
     public void givenNumberShouldBeProcessedAnd_ReturnEmptyStatus_WhenNextPlayerIsOffline() throws Exception {
 
-        when(serviceMock.send(50)).thenReturn(Optional.empty());
         RequestBuilder requestBuilder =
                 post("/gameof3/50");
 
@@ -94,7 +94,8 @@ public class GameOf3ControllerTest {
 
         MockHttpServletResponse response = result.getResponse();
 
-        assertEquals(HttpStatus.NOT_ACCEPTABLE.value(), response.getStatus());
+        assertEquals(HttpStatus.ACCEPTED.value(), response.getStatus());
+        verify(executorService, times(1)).send(17);
     }
 
     @Test

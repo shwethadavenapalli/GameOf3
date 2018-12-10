@@ -4,7 +4,6 @@ import com.takeaway.gameof3.service.NumberSendingService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
@@ -31,7 +30,7 @@ public class GameInitiator implements Runnable {
 
     @Override
     public void run() {
-        log.info("Game Initiator");
+        log.info("Game Initiator has started and trying to send a random number");
         send(getRandomNumber());
     }
 
@@ -43,16 +42,18 @@ public class GameInitiator implements Runnable {
         //perform an attempt to send a number to player 2,
         //Max attempts is 3 times. After that player 1 refuses to play :(
         do {
+            log.info("{} : Sending a random number : {} to oponent : {} ",
+                    service.getPlayerName(), number, service.getOponentPlayerName());
+
             Optional<ResponseEntity<Void>> response = service.send(number);
             if (!response.isPresent()) {
                 retryAttemptsPerformed++;
                 sleepExponentially();
             } else {
-                return;
+                break;
             }
         } while (retryAttemptsPerformed < MAX_RETRY_COUNT);
     }
-
 
 
     private void resetAttemptCoutner() {

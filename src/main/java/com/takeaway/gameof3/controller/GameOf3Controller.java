@@ -1,5 +1,6 @@
 package com.takeaway.gameof3.controller;
 
+import com.takeaway.gameof3.service.NumberSendingExecutorService;
 import com.takeaway.gameof3.service.NumberSendingService;
 import com.takeaway.gameof3.util.RoundToNearestFactor;
 import org.slf4j.Logger;
@@ -12,8 +13,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Optional;
-
 /**
  * Created by Shwetha on 09-12-2018.
  */
@@ -21,13 +20,19 @@ import java.util.Optional;
 @RequestMapping(value = "/gameof3")
 public class GameOf3Controller {
 
-    @Autowired
     private NumberSendingService numberSendingService;
+    private NumberSendingExecutorService executorService;
+
+    @Autowired
+    public GameOf3Controller(NumberSendingService numberSendingService, NumberSendingExecutorService executorService) {
+        this.numberSendingService = numberSendingService;
+        this.executorService = executorService;
+    }
 
     private static final Logger log = LoggerFactory.getLogger(GameOf3Controller.class);
 
     @RequestMapping(value = "/{inputNumber}", method = RequestMethod.POST)
-    public ResponseEntity<Void> processRequest(@PathVariable Integer inputNumber) {
+    public ResponseEntity<Void> acceptInputNumberFromOponent(@PathVariable Integer inputNumber) {
         log.info("Received number : {} by : {}", inputNumber, numberSendingService.getPlayerName());
 
         Integer roundedInputNumber = RoundToNearestFactor.roundToNearestFactorOf3(inputNumber);
@@ -35,25 +40,20 @@ public class GameOf3Controller {
         if (!IsGameWonByCurrentPlayer(roundedInputNumber)) {
 
             int reducedNumber = roundedInputNumber / 3;
-
-            Optional<ResponseEntity<Void>> isSentToNextPlayer = numberSendingService.send(reducedNumber);
-
-            if (isSentToNextPlayer.isPresent() && isSentToNextPlayer.get().getStatusCode() == HttpStatus.ACCEPTED)
-                return new ResponseEntity<>(HttpStatus.ACCEPTED);
-            else
-                return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
+            executorService.send(reducedNumber);
+            return new ResponseEntity<>(HttpStatus.ACCEPTED);
         }
 
         log.info("{} has WON !!! :)", numberSendingService.getPlayerName());
 
-        //convey to game status as WON to oponent player
+        //convey game status as WON to oponent player
         numberSendingService.sendGameStatusAsWON();
 
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @RequestMapping(value = "/status/{playerName}/WON", method = RequestMethod.POST)
-    public ResponseEntity<Void> processRequest(@PathVariable String playerName) {
+    public ResponseEntity<Void> acceptGameStatus(@PathVariable String playerName) {
 
         log.info("Received that {} has won.", playerName);
         return new ResponseEntity<>(HttpStatus.OK);

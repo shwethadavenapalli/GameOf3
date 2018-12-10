@@ -75,4 +75,11 @@ public class OponentEndpointSelector {
         }
         return "Player2";
     }
+
+    public String getOponentPlayerName() {
+        if (!isGameInitator()) {
+            return "Player1";
+        }
+        return "Player2";
+    }
 }

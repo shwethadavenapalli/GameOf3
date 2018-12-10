@@ -50,6 +50,7 @@ public class GameOf3ControllerIntegrationTest {
         MockHttpServletResponse response = mvcResult.getResponse();
         assertEquals(HttpStatus.ACCEPTED.value(), response.getStatus());
 
+        Thread.sleep(2000);
         verify(postRequestedFor(urlMatching("/gameof3/" + 3)));
     }
 
@@ -67,15 +68,6 @@ public class GameOf3ControllerIntegrationTest {
         assertEquals(HttpStatus.OK.value(), response.getStatus());
 
         verify(postRequestedFor(urlMatching("/gameof3/status/" + playerName + "/" + gameStatus)));
-    }
-
-    @Test
-    public void shouldReturnEmptyValueWhenOpponentPlayerIsOffline() throws Exception {
-        RequestBuilder requestBuilder = MockMvcRequestBuilders
-                .post("/gameof3/50");
-        MvcResult mvcResult = mockMvc.perform(requestBuilder).andReturn();
-        MockHttpServletResponse response = mvcResult.getResponse();
-        assertEquals(HttpStatus.NOT_ACCEPTABLE.value(), response.getStatus());
     }
 
     public void setupStubForPlayer2ForAcceptingANumberAndReturn202(Integer number) {

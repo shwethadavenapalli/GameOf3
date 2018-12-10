@@ -6,7 +6,7 @@ cd player2
 
 java -jar ../target/game_of_3-0.0.1-SNAPSHOT.jar  --spring.config.location=application.properties > player2.log &
 
-sleep 10
+sleep 20
 
 cd ../player1/
 

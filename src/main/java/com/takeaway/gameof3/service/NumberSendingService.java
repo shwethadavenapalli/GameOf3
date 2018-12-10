@@ -38,27 +38,25 @@ public class NumberSendingService {
             ResponseEntity<Void> voidResponseEntity = restTemplate.postForEntity(player2UrlForSendingNumber, Void.class, Void.class);
 
             if (voidResponseEntity.getStatusCode() == HttpStatus.ACCEPTED) {
-                log.info("Send the random number generated to Player 2");
                 return Optional.of(voidResponseEntity);
             }
         } catch (HttpClientErrorException exception) {
-            log.warn("Player2 is unreachable due to exception : {}", exception.getMessage());
+            log.warn("{} is unreachable while sending number due to exception : {}", getOponentPlayerName(), exception.getMessage());
         }
         return Optional.empty();
     }
 
     public Optional<ResponseEntity<Void>> sendGameStatusAsWON() {
         try {
-            log.info("{} : Sending game status as WON to oponent", getPlayerName());
+            log.info("{} : Sending game status as WON to oponent :{}", getPlayerName(), getOponentPlayerName());
             String player2UrlForSendingGameWonStatus = getEnpointForSendingGameStatus();
             ResponseEntity<Void> voidResponseEntity = restTemplate.postForEntity(player2UrlForSendingGameWonStatus, Void.class, Void.class);
 
             if (voidResponseEntity.getStatusCode() == HttpStatus.OK) {
-                log.info("Sending the game status to opponent player");
                 return Optional.of(voidResponseEntity);
             }
         } catch (HttpClientErrorException exception) {
-            log.warn("Player2 is unreachable due to exception : {}", exception.getMessage());
+            log.warn("{} is unreachable while sending status due to exception : {}", getOponentPlayerName(), exception.getMessage());
         }
         return Optional.empty();
     }
@@ -77,5 +75,9 @@ public class NumberSendingService {
 
     public String getPlayerName(){
         return oponentEndpointSelector.getCurrentPlayerName();
+    }
+
+    public String getOponentPlayerName(){
+        return oponentEndpointSelector.getOponentPlayerName();
     }
 }
