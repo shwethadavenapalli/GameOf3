@@ -38,7 +38,7 @@ public class GameOf3ControllerTest {
 
         ResponseEntity<Void> responseEntity = new ResponseEntity<>(HttpStatus.ACCEPTED);
 
-        when(serviceMock.send(51)).thenReturn(Optional.of(responseEntity));
+        when(serviceMock.send(17)).thenReturn(Optional.of(responseEntity));
 
         MvcResult result = mockMvc.perform(post("/gameof3/50"))
                 .andReturn();
@@ -47,7 +47,7 @@ public class GameOf3ControllerTest {
 
         assertEquals(HttpStatus.ACCEPTED.value(), response.getStatus());
 
-        verify(serviceMock, times(1)).send(51);
+        verify(serviceMock, times(1)).send(17);
     }
 
     @Test
@@ -55,7 +55,7 @@ public class GameOf3ControllerTest {
 
         ResponseEntity<Void> responseEntity = new ResponseEntity<>(HttpStatus.ACCEPTED);
 
-        when(serviceMock.send(51)).thenReturn(Optional.of(responseEntity));
+        when(serviceMock.send(17)).thenReturn(Optional.of(responseEntity));
 
         MvcResult result = mockMvc.perform(post("/gameof3/51"))
                 .andReturn();
@@ -64,7 +64,7 @@ public class GameOf3ControllerTest {
 
         assertEquals(HttpStatus.ACCEPTED.value(), response.getStatus());
 
-        verify(serviceMock, times(1)).send(51);
+        verify(serviceMock, times(1)).send(17);
     }
 
     @Test
@@ -81,7 +81,6 @@ public class GameOf3ControllerTest {
 
         verify(serviceMock, times(1)).sendGameStatusAsWON();
 
-        verifyNoMoreInteractions(serviceMock);
     }
 
     @Test

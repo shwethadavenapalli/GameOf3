@@ -28,11 +28,15 @@ public class GameOf3Controller {
 
     @RequestMapping(value = "/{inputNumber}", method = RequestMethod.POST)
     public ResponseEntity<Void> processRequest(@PathVariable Integer inputNumber) {
+        log.info("Received number : {} by : {}", inputNumber, numberSendingService.getPlayerName());
 
         Integer roundedInputNumber = RoundToNearestFactor.roundToNearestFactorOf3(inputNumber);
 
-        if (!IsGameWonByCurrentPlayer(inputNumber)) {
-            Optional<ResponseEntity<Void>> isSentToNextPlayer = numberSendingService.send(roundedInputNumber);
+        if (!IsGameWonByCurrentPlayer(roundedInputNumber)) {
+
+            int reducedNumber = roundedInputNumber / 3;
+
+            Optional<ResponseEntity<Void>> isSentToNextPlayer = numberSendingService.send(reducedNumber);
 
             if (isSentToNextPlayer.isPresent() && isSentToNextPlayer.get().getStatusCode() == HttpStatus.ACCEPTED)
                 return new ResponseEntity<>(HttpStatus.ACCEPTED);
@@ -40,7 +44,7 @@ public class GameOf3Controller {
                 return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
         }
 
-        log.info("I have WON !!! :)");
+        log.info("{} has WON !!! :)", numberSendingService.getPlayerName());
 
         //convey to game status as WON to oponent player
         numberSendingService.sendGameStatusAsWON();

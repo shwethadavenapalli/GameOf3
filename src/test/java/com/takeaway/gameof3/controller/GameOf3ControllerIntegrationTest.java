@@ -42,7 +42,7 @@ public class GameOf3ControllerIntegrationTest {
 
     @Test
     public void givenNumberShouldBeSentToOpponentPlayerSuccessfully() throws Exception {
-        setupStubForPlayer2ForAcceptingANumberAndReturn202(9);
+        setupStubForPlayer2ForAcceptingANumberAndReturn202(3);
 
         RequestBuilder requestBuilder = MockMvcRequestBuilders
                 .post("/gameof3/10");
@@ -50,7 +50,7 @@ public class GameOf3ControllerIntegrationTest {
         MockHttpServletResponse response = mvcResult.getResponse();
         assertEquals(HttpStatus.ACCEPTED.value(), response.getStatus());
 
-        verify(postRequestedFor(urlMatching("/gameof3/" + 9)));
+        verify(postRequestedFor(urlMatching("/gameof3/" + 3)));
     }
 
     @Test

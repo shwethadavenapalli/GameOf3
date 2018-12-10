@@ -32,6 +32,9 @@ public class NumberSendingService {
     public Optional<ResponseEntity<Void>> send(int number) {
         try {
             String player2UrlForSendingNumber = getPlayer2UrlForSendingNumber(number);
+
+            log.info("{} : Sending number : {} to opponent", getPlayerName(), number);
+
             ResponseEntity<Void> voidResponseEntity = restTemplate.postForEntity(player2UrlForSendingNumber, Void.class, Void.class);
 
             if (voidResponseEntity.getStatusCode() == HttpStatus.ACCEPTED) {
@@ -46,6 +49,7 @@ public class NumberSendingService {
 
     public Optional<ResponseEntity<Void>> sendGameStatusAsWON() {
         try {
+            log.info("{} : Sending game status as WON to oponent", getPlayerName());
             String player2UrlForSendingGameWonStatus = getEnpointForSendingGameStatus();
             ResponseEntity<Void> voidResponseEntity = restTemplate.postForEntity(player2UrlForSendingGameWonStatus, Void.class, Void.class);
 
@@ -69,5 +73,9 @@ public class NumberSendingService {
         String currentPlayerName= oponentEndpointSelector.getCurrentPlayerName();
         return oponentEndpointSelector.getOpenentUrl() + "/gameof3/status/" +currentPlayerName+"/WON" ;
 
+    }
+
+    public String getPlayerName(){
+        return oponentEndpointSelector.getCurrentPlayerName();
     }
 }
