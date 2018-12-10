@@ -16,15 +16,15 @@ import java.util.Optional;
  * Created by Shwetha on 09-12-2018.
  */
 @Service
-public class NumberSendingService {
-    private static final Logger log = LoggerFactory.getLogger(NumberSendingService.class);
+public class MessagingService {
+    private static final Logger log = LoggerFactory.getLogger(MessagingService.class);
 
     private final OponentEndpointSelector oponentEndpointSelector;
     private final RestTemplate restTemplate;
 
     @Autowired
-    public NumberSendingService(OponentEndpointSelector oponentEndpointSelector,
-                                RestTemplate restTemplate) {
+    public MessagingService(OponentEndpointSelector oponentEndpointSelector,
+                            RestTemplate restTemplate) {
         this.oponentEndpointSelector = oponentEndpointSelector;
         this.restTemplate = restTemplate;
     }

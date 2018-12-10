@@ -20,7 +20,7 @@ import static org.mockito.Mockito.*;
 public class NumberSendingExecutorServiceTest {
 
     @Mock
-    private NumberSendingService service;
+    private MessagingService service;
 
     private NumberSendingExecutorService executorService;
 

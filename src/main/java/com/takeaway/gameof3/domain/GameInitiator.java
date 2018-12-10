@@ -1,6 +1,6 @@
 package com.takeaway.gameof3.domain;
 
-import com.takeaway.gameof3.service.NumberSendingService;
+import com.takeaway.gameof3.service.MessagingService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,12 +19,12 @@ public class GameInitiator implements Runnable {
 
     private static final Logger log = LoggerFactory.getLogger(GameInitiator.class);
 
-    private final NumberSendingService service;
+    private final MessagingService service;
     private static final int MAX_RETRY_COUNT = 3;
     private int retryAttemptsPerformed;
 
     @Autowired
-    public GameInitiator(NumberSendingService service) {
+    public GameInitiator(MessagingService service) {
         this.service = service;
     }
 

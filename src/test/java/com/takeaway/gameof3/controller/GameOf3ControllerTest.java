@@ -1,10 +1,9 @@
 package com.takeaway.gameof3.controller;
 
 import com.takeaway.gameof3.service.NumberSendingExecutorService;
-import com.takeaway.gameof3.service.NumberSendingService;
+import com.takeaway.gameof3.service.MessagingService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -33,7 +32,7 @@ public class GameOf3ControllerTest {
     private MockMvc mockMvc;
 
     @MockBean
-    private NumberSendingService serviceMock;
+    private MessagingService serviceMock;
 
     @MockBean
     private NumberSendingExecutorService executorService;

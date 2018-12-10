@@ -20,17 +20,17 @@ import static org.mockito.Mockito.*;
  * Created by Shwetha on 09-12-2018.
  */
 @RunWith(MockitoJUnitRunner.class)
-public class NumberSendingServiceTest {
+public class MessagingServiceTest {
 
     @Mock
     private RestTemplate restTemplate;
 
-    private NumberSendingService numberSendingService;
+    private MessagingService messagingService;
 
     @Before
     public void setUp() throws Exception {
         OponentEndpointSelector oponentEndpointSelector = getOponentEndpointSelector();
-        numberSendingService = new NumberSendingService(oponentEndpointSelector, restTemplate);
+        messagingService = new MessagingService(oponentEndpointSelector, restTemplate);
     }
 
     @Test
@@ -40,13 +40,13 @@ public class NumberSendingServiceTest {
         ResponseEntity<Void> responseEntity = new ResponseEntity<>(HttpStatus.ACCEPTED);
         int numberToSend = 20;
 
-        String player2UrlForSendingNumber = numberSendingService.getPlayer2UrlForSendingNumber(numberToSend);
+        String player2UrlForSendingNumber = messagingService.getPlayer2UrlForSendingNumber(numberToSend);
 
         when(restTemplate.postForEntity(player2UrlForSendingNumber, Void.class, Void.class))
                 .thenReturn(responseEntity);
 
         //Act
-        Optional<ResponseEntity<Void>> response = numberSendingService.send(numberToSend);
+        Optional<ResponseEntity<Void>> response = messagingService.send(numberToSend);
 
         //Assert
         assertThat(response).isPresent();
@@ -60,13 +60,13 @@ public class NumberSendingServiceTest {
 
         //Arrange
         int numberToSend = 20;
-        String player2UrlForSendingNumber = numberSendingService.getPlayer2UrlForSendingNumber(numberToSend);
+        String player2UrlForSendingNumber = messagingService.getPlayer2UrlForSendingNumber(numberToSend);
 
         when(restTemplate.postForEntity(player2UrlForSendingNumber, Void.class, Void.class))
                 .thenThrow(new HttpClientErrorException(HttpStatus.NOT_FOUND));
 
         //Act
-        Optional<ResponseEntity<Void>> response = numberSendingService.send(numberToSend);
+        Optional<ResponseEntity<Void>> response = messagingService.send(numberToSend);
         assertThat(response).isEmpty();
 
         //Assert
@@ -80,13 +80,13 @@ public class NumberSendingServiceTest {
         //Arrange
         ResponseEntity<Void> responseEntity = new ResponseEntity<>(HttpStatus.OK);
 
-        String enpointForSendingGameStatus = numberSendingService.getEnpointForSendingGameStatus();
+        String enpointForSendingGameStatus = messagingService.getEnpointForSendingGameStatus();
 
         when(restTemplate.postForEntity(enpointForSendingGameStatus, Void.class, Void.class))
                 .thenReturn(responseEntity);
 
         //Act
-        Optional<ResponseEntity<Void>> response = numberSendingService.sendGameStatusAsWON();
+        Optional<ResponseEntity<Void>> response = messagingService.sendGameStatusAsWON();
 
         //Assert
         assertThat(response).isPresent();
@@ -98,13 +98,13 @@ public class NumberSendingServiceTest {
     @Test
     public void shouldReturnEmptyOptionalIfPlayer2IsUnreachableForSendingGameStatus() throws Exception {
 
-        String enpointForSendingGameStatus = numberSendingService.getEnpointForSendingGameStatus();
+        String enpointForSendingGameStatus = messagingService.getEnpointForSendingGameStatus();
 
         when(restTemplate.postForEntity(enpointForSendingGameStatus, Void.class, Void.class))
                 .thenThrow(new HttpClientErrorException(HttpStatus.NOT_FOUND));
 
         //Act
-        Optional<ResponseEntity<Void>> response = numberSendingService.sendGameStatusAsWON();
+        Optional<ResponseEntity<Void>> response = messagingService.sendGameStatusAsWON();
 
         //Assert
         assertThat(response).isEmpty();

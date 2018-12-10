@@ -1,7 +1,7 @@
 package com.takeaway.gameof3.controller;
 
 import com.takeaway.gameof3.service.NumberSendingExecutorService;
-import com.takeaway.gameof3.service.NumberSendingService;
+import com.takeaway.gameof3.service.MessagingService;
 import com.takeaway.gameof3.util.RoundToNearestFactor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,12 +20,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping(value = "/gameof3")
 public class GameOf3Controller {
 
-    private NumberSendingService numberSendingService;
+    private MessagingService messagingService;
     private NumberSendingExecutorService executorService;
 
     @Autowired
-    public GameOf3Controller(NumberSendingService numberSendingService, NumberSendingExecutorService executorService) {
-        this.numberSendingService = numberSendingService;
+    public GameOf3Controller(MessagingService messagingService, NumberSendingExecutorService executorService) {
+        this.messagingService = messagingService;
         this.executorService = executorService;
     }
 
@@ -33,7 +33,7 @@ public class GameOf3Controller {
 
     @RequestMapping(value = "/{inputNumber}", method = RequestMethod.POST)
     public ResponseEntity<Void> acceptInputNumberFromOponent(@PathVariable Integer inputNumber) {
-        log.info("Received number : {} by : {}", inputNumber, numberSendingService.getPlayerName());
+        log.info("Received number : {} by : {}", inputNumber, messagingService.getPlayerName());
 
         Integer roundedInputNumber = RoundToNearestFactor.roundToNearestFactorOf3(inputNumber);
 
@@ -44,10 +44,10 @@ public class GameOf3Controller {
             return new ResponseEntity<>(HttpStatus.ACCEPTED);
         }
 
-        log.info("{} has WON !!! :)", numberSendingService.getPlayerName());
+        log.info("{} has WON !!! :)", messagingService.getPlayerName());
 
         //convey game status as WON to oponent player
-        numberSendingService.sendGameStatusAsWON();
+        messagingService.sendGameStatusAsWON();
 
         return new ResponseEntity<>(HttpStatus.OK);
     }
