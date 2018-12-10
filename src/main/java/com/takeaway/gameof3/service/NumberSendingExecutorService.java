@@ -31,7 +31,7 @@ public class NumberSendingExecutorService {
             if (isSentToNextPlayer.isPresent() && isSentToNextPlayer.get().getStatusCode() == HttpStatus.ACCEPTED){
                 log.debug("Opponent accepted the number");
             } else {
-                log.error("Opponent did not accepted the number");
+                log.debug("Opponent did not accepted the number");
             }
         };
         Thread thread = new Thread(sendNumberToOponentTask);
